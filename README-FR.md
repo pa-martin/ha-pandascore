@@ -1,12 +1,12 @@
 # 🕹️ Intégration PandaScore pour Home Assistant
 
-[![HACS Badge](https://img.shields.io/badge/Available%20in-HACS-41BDF5?logo=home-assistant&logoColor=white)](https://my.home-assistant.io/redirect/hacs_repository/?owner=pa-martin&repository=ha-pandascore&category=integration)
+[![HACS Badge](https://img.shields.io/badge/Disponible%20via-HACS-41BDF5?logo=home-assistant)](https://my.home-assistant.io/redirect/hacs_repository/?owner=pa-martin&repository=ha-pandascore&category=integration)
 [![Home Assistant](https://img.shields.io/badge/Home--Assistant-2026.7+-blue?logo=home-assistant)](https://www.home-assistant.io/blog/2026/07/01/release-20267/)
-[![Licence MIT](https://img.shields.io/github/license/pa-martin/ha-pandascore)](https://github.com/pa-martin/ha-pandascore/blob/main/LICENSE)
-[![Latest Version](https://img.shields.io/github/manifest-json/v/pa-martin/ha-pandascore?filename=pandascore%2Fmanifest.json)](https://github.com/pa-martin/ha-pandascore/releases)
-[![Latest Release](https://img.shields.io/github/pa-martin/ha-pandascore/releases?label=Release&logo=github)](https://github.com/pa-martin/ha-pandascore/releases)
-[![Last Commit](https://img.shields.io/github/last-commit/pa-martin/ha-pandascore/releases?label=Last%20commit)](https://github.com/pa-martin/ha-pandascore/commits/main)
-[![GitHub Stars](https://img.shields.io/github/stars/pa-martin/ha-pandascore?style=social)](https://github.com/pa-martin/ha-pandascore/stargazers)
+
+[![Licence MIT](https://img.shields.io/github/license/pa-martin/ha-pandascore?label=Licence&logo=github)](https://github.com/pa-martin/ha-pandascore/blob/main/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/pa-martin/ha-pandascore?label=Version&logo=github)](https://github.com/pa-martin/ha-pandascore/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/pa-martin/ha-pandascore?label=Derni%C3%A8re%20mise%20%C3%A0%20jour&logo=github)](https://github.com/pa-martin/ha-pandascore/commits/main)
+[![GitHub Stars](https://img.shields.io/github/stars/pa-martin/ha-pandascore?label=Favoris&style=social)](https://github.com/pa-martin/ha-pandascore/stargazers)
 
 
 Suivez les matchs de vos équipes e-Sport préférées via l'API PandaScore et la carte personnalisée Team Tracker.

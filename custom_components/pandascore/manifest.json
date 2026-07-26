@@ -1,6 +1,6 @@
 {
   "domain": "pandascore",
-  "name": "Pandascore",
+  "name": "PandaScore API",
   "codeowners": [
     "@pa-martin"
   ],

@@ -1,9 +1,12 @@
 # 🕹️ PandaScore Integration for Home Assistant
 
-![Home Assistant](https://img.shields.io/badge/Home--Assistant-2026.7+-blue?logo=home-assistant)
-![Custom Component](https://img.shields.io/badge/Custom%20Component-yes-orange)
-![MIT License](https://img.shields.io/badge/License-MIT-green)
+[![HACS Badge](https://img.shields.io/badge/Available%20in-HACS-41BDF5?logo=home-assistant)](https://my.home-assistant.io/redirect/hacs_repository/?owner=pa-martin&repository=ha-pandascore&category=integration)
+[![Home Assistant](https://img.shields.io/badge/Home--Assistant-2026.7+-blue?logo=home-assistant)](https://www.home-assistant.io/blog/2026/07/01/release-20267/)
 
+[![Licence MIT](https://img.shields.io/github/license/pa-martin/ha-pandascore?label=License&logo=github)](https://github.com/pa-martin/ha-pandascore/blob/main/LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/pa-martin/ha-pandascore?label=Release&logo=github)](https://github.com/pa-martin/ha-pandascore/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/pa-martin/ha-pandascore?label=Last%20Release&logo=github)](https://github.com/pa-martin/ha-pandascore/commits/main)
+[![GitHub Stars](https://img.shields.io/github/stars/pa-martin/ha-pandascore?style=social)](https://github.com/pa-martin/ha-pandascore/stargazers)
 Follow your favorite e-Sports teams' matches through the PandaScore API and the custom Team Tracker Card.
 
 ---
