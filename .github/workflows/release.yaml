@@ -1,35 +1,67 @@
 name: "Release"
 
 on:
-  release:
-    types:
-      - "published"
+  push:
+    branches:
+      - "main"
 
-permissions: {}
+permissions:
+  contents: write
 
 jobs:
   release:
     name: "Release"
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
     runs-on: "ubuntu-latest"
-    permissions:
-      contents: write
+
     steps:
       - name: "Checkout the repository"
-        uses: "actions/checkout@v6.0.1"
-
-      - name: "Adjust version number"
-        shell: "bash"
-        run: |
-          yq -i -o json '.version="${{ github.event.release.tag_name }}"' \
-            "${{ github.workspace }}/custom_components/sncf_trains/manifest.json"
-
-      - name: "ZIP the integration directory"
-        shell: "bash"
-        run: |
-          cd "${{ github.workspace }}/custom_components/sncf_trains"
-          zip sncf_trains_ha.zip -r ./
-
-      - name: "Upload the ZIP file to the release"
-        uses: softprops/action-gh-release@v2.5.0
+        uses: actions/checkout@v6
         with:
-          files: ${{ github.workspace }}/custom_components/sncf_trains/sncf_trains_ha.zip
+          fetch-depth: 0
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: "Determine next version"
+        id: version
+        run: python3 scripts/release.py
+
+      - name: "Stop if no release is required"
+        if: steps.version.outputs.release != 'true'
+        run: echo "No release required."
+
+      - name: "Configure Git"
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: "Commit version change"
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git add custom_components/pandascore/manifest.json
+          git commit -m "chore(release): v${{ steps.version.outputs.version }} [skip ci]"
+
+      - name: "Create Git tag"
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git tag "v${{ steps.version.outputs.version }}"
+
+      - name: "Push release commit and tag"
+        if: steps.version.outputs.release == 'true'
+        run: |
+          git push origin main
+          git push origin "v${{ steps.version.outputs.version }}"
+
+      - name: "Create GitHub Release"
+        if: steps.version.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create \
+            "v${{ steps.version.outputs.version }}" \
+            --title "PandaScore v${{ steps.version.outputs.version }}" \
+            --generate-notes

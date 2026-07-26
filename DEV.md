@@ -1,3 +1,11 @@
+# Actions automatique
+
+Des hooks Git doivent être installés avant de commit des modifications. Ces hooks s'installent avec la commande :
+
+```shell
+pre-commit install --hook-type pre-commit --hook-type commit-msg
+```
+
 # Créer une instance HA via Docker
 
 L'objectif ici est de créer un container Docker d'Home Assistant vierge avec uniquement l'intégration
