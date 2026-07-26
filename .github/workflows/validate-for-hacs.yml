@@ -1,0 +1,21 @@
+name: Validate for HACS
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  validate-hacs:
+    # On exécute ce job uniquement sur le repository principal puisqu'il est le seul déclaré auprès d'HACS.
+    if: ${{ github.repository == 'pa-martin/ha-pandascore' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v6"
+      - name: HACS validation
+        uses: "hacs/action@main"
+        with:
+          category: "integration"

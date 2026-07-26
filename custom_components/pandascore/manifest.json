@@ -1,0 +1,20 @@
+{
+  "domain": "pandascore",
+  "name": "Pandascore",
+  "codeowners": [
+    "@pa-martin"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/pa-martin/ha-pandascore",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/pa-martin/ha-pandascore/issues",
+  "requirements": [
+    "Babel",
+    "marshmallow",
+    "marshmallow_dataclass"
+  ],
+  "single_config_entry": false,
+  "version": "0.0.0"
+}

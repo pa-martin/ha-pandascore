@@ -1,0 +1,101 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect Pandascore",
+        "description": "Enter your API token and a team name to search.",
+        "data": {
+          "token": "Pandascore API token",
+          "search": "Team name"
+        }
+      },
+      "select_teams": {
+        "title": "Select teams",
+        "description": "Select the teams you want to follow.",
+        "data": {
+          "teams": "Teams"
+        }
+      },
+      "reconfigure": {
+        "title": "Update integration",
+        "description": "Update token and run a new team search.",
+        "data": {
+          "token": "Pandascore API token",
+          "search": "Team name"
+        }
+      },
+      "select_teams_reconfigure": {
+        "title": "Select teams",
+        "description": "Select teams to keep for this integration.",
+        "data": {
+          "teams": "Teams"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Pandascore API.",
+      "no_teams_found": "No teams found for this search.",
+      "no_team_selected": "Select at least one team."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Teams",
+        "description": "Update followed teams. Use 'Add team' to search and add new teams.",
+        "data": {
+          "teams": "Teams",
+          "add_team": "Add team"
+        }
+      },
+      "add_team": {
+        "title": "Add team",
+        "description": "Select one or more teams to add.",
+        "data": {
+          "new_teams": "Teams"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Pandascore API.",
+      "no_teams_found": "No teams found for this search.",
+      "no_team_selected": "Select at least one team."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "name": {
+        "name": "Name"
+      },
+      "game": {
+        "name": "Video game",
+        "state": {
+          "lol": "League of Legends",
+          "valorant": "Valorant",
+          "rocket-league": "Rocket League"
+        }
+      },
+      "next_match": {
+        "name": "Next match"
+      },
+      "last_match": {
+        "name": "Last match"
+      },
+      "matches_won": {
+        "name": "Matches won"
+      },
+      "matches_loss": {
+        "name": "Matches loss"
+      },
+      "win_rate": {
+        "name": "Win rate"
+      },
+      "matches_played": {
+        "name": "Matches played"
+      },
+      "upcoming_matches": {
+        "name": "Upcoming matches"
+      }
+    }
+  }
+}
