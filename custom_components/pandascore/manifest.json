@@ -16,5 +16,5 @@
     "marshmallow_dataclass"
   ],
   "single_config_entry": false,
-  "version": "1.0.0"
+  "version": "0.0.0"
 }
