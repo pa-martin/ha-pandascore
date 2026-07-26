@@ -1,0 +1,15 @@
+services:
+  homeassistant:
+    container_name: "homeassistant"
+    image: "homeassistant/home-assistant:stable"
+    volumes:
+      - "./config:/config"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "./custom_components:/config/custom_components"
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "80:8123"
+      - "443:8123"
+    environment:
+      TZ: Europe/Paris

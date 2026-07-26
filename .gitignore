@@ -109,3 +109,8 @@ venv.bak/
 .mypy_cache/
 *.DS_Store
 .vscode/settings.json
+
+# HA
+config/
+/custom_components/*
+!/custom_components/pandascore

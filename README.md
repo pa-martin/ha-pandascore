@@ -1,144 +1,213 @@
-# Example Home Assistant Integration
+# 🕹️ PandaScore Integration for Home Assistant
 
-These example integrations attempt to give a good basic framework for those wishing to develop a HA custom integration but have little knowledge of how to start.
+![Home Assistant](https://img.shields.io/badge/Home--Assistant-2026.7+-blue?logo=home-assistant)
+![Custom Component](https://img.shields.io/badge/Custom%20Component-yes-orange)
+![MIT License](https://img.shields.io/badge/License-MIT-green)
 
-There are 3 main integrations here as follows:
+Follow your favorite e-Sports teams' matches through the PandaScore API and the custom Team Tracker Card.
 
-## Integration 101 Template
+---
 
-  This is (in my view) the basic building blocks to get started on your own integration.  It will need some modifications by you to suit your own specifics but it shows how to:
+## 📦 Installation
 
-- Integration Initialisation
-  - The basic steps to initialise your integration
-  - Adding a listener to reload your integration if options change
-  - Adding the option to delete devices in the UI
+### 1. Via HACS (recommended)
 
-- Config Flow
-  - Create a basic config flow to setup your integration via the UI
-  - Create a config flow to reconfigure your integration
-  - Creat an options flow to allow setting of optional parameters
+> Requires HACS to be installed in Home Assistant
 
-- Using a DataUpdateCoordinator 
-  - How to setup a data coordinator to manage communication with your api
-  - How to store and use that data across your entity platforms
+1. Go to **HACS**
+2. Search for **PandaScore API**
+3. Install the integration and restart Home Assistant
 
-- Entity platforms
-  - Examples of adding binary sensors
-  - Examples of adding sensors
+### 2. Manual (without HACS)
 
-## Integration 101 Intermediate
+1. Download the repository contents
+2. Copy the `pandascore` folder to `config/custom_components/`
+3. Restart Home Assistant
 
-This builds on the Integration 101 Template and adds some more advanced functionality to help make your integration more functional:
+---
 
-- Config Flow
-  - Multi-step flows
-  - Using selectors in your flows
-  - Using data from your api in a config flow
+## ⚙️ Configuration
 
-- Entity Platforms
-  - Setting up switches, lights and fans as examples of entites that can control your devices
-  - Using `_attr_*` attributes in your entity classes to reduce code size
+1. Go to **Settings → Devices & services → Add Integration**
+2. Search for **PandaScore API**
+3. Search for teams:
 
-- Base Entity
-  - Using a base entity from which to inherit all your entity classes to make you code smaller and neater
+    * PandaScore API key
+    * Keywords used to search for multiple teams (e.g., karmine, gentle mates)
+4. Team selection:
 
-- Services
-  - Entity services to call against your entities
-  - Integration services to call against your integration/api
+    * A list of teams returned by the API is displayed
+    * Select the teams you are interested in
+    * Teams are displayed using the format `[Video game] Team name`
 
-## Integration 101 Advanced
+Multiple searches can be configured separately.
 
-This is currently a work in progress but will add the following to the Integration 101 Intermediate example.
+## 🔐 PandaScore API Key
 
-- Translations
-- Websockets
-- Firing Events
-- Device Triggers for automations
-- And maybe more... (please raise and issue to see a subject covered)
+Get your API key here: https://app.pandascore.co/signup
 
+1. Create an account or log in
+2. Generate a free API key (under the "Your access token" section)
+3. Use it when configuring the integration (limit of 1,000 requests per hour)
 
-## Can I Run Them?
+---
 
-Yes, these are fully functioning integrations (I mean they don't do anything as the api is mocked), that will provide a config flow to add the integration and create devices with entities.
+## 📊 Created Sensors
 
-In the Integration 101 Template, the mocked api is designed to randomly change the door open/closed status and the temp sensor values, so it looks like it is getting actual readings from real devices.  The Integration 101 Intermedate and Advanced don't do this.
+* `sensor.{videGame_slug}_{team_slug}` - The team's next match if they have an upcoming match, otherwise the last match
 
-NOTE: For the purposes of being a good example, the api only accepts a specific username and password.  These are prepopulated when adding the integration (do not do this with your own real world integrations!).  If you modify these, you will get an Authorisation error (but thats what should happen if they are wrong!).
+    * Compatible with the Team Tracker Card
+* `sensor.{videGame_slug}_{team_slug}_name` - The team's name
+* `sensor.{videGame_slug}_{team_slug}_game` - The video game associated with the team
+* `sensor.{videGame_slug}_{team_slug}_next_match` - The next scheduled match
 
-## How Do I Install This?
+    * Compatible with the Team Tracker Card
+* `sensor.{videGame_slug}_{team_slug}_last_match` - The last played match
 
-If you are going to start developing integrations, there are some things you need to learn and do first.  These are:
+    * Compatible with the Team Tracker Card
+* `sensor.{videGame_slug}_{team_slug}_matches_won` - The number of matches won during the current year
+* `sensor.{videGame_slug}_{team_slug}_matches_lost` - The number of matches lost during the current year
+* `sensor.{videGame_slug}_{team_slug}_win_rate` - The team's win rate during the current year
+* `sensor.{videGame_slug}_{team_slug}_matches_played` - The number of matches played during the current year
 
-1. **Create a HA development environment**
+    * Matches - The list of played matches
+* `sensor.{videGame_slug}_{team_slug}_upcoming_matches` - The number of upcoming matches
 
-   Investing the time to do this at the start will reward you with all that time back and more later.  I highly recommend using the VSCode Dev Container method.
+    * Matches - The list of upcoming matches
 
-   [Developing with Visual Studio Code and Devcontainer](https://developers.home-assistant.io/docs/development_environment#developing-with-visual-studio-code--devcontainer)
+### Match Sensor Attributes
 
-2. **Create a github account (it's free) and fork this repository**
+These attributes can be used with the Lovelace `custom:teamtracker-card` card (see below).
 
-    That way, you can modify this example to build your own and have a nice safe place to store it, so you do not risk loosing the work you put into it.  Again, VSCode will make it very easy to commit changes to your repository, if you take the time to set it up.
+Match-related attributes:
 
-3. **Obviously, you are going to need some level of Python knowledge**
+* `state` - The match state: PRE (upcoming), IN (in progress), POST (finished)
 
-    If you are like me, walking through existing working examples, is a good way to learn and there is also much on google.  The biggest learning curve (IMHO), is how to get going with an integration.  The development documentation is pretty good in places but I think much more of a reference guide than a step by step getting you going.  That is why I decided to put some time to create this working example that includes the key elements you will need for pretty much any custom integration.
+* `sport` - The short name of the league (should be replaced with the game name?)
 
-So, once you have ticked off your todo list above, you can install one of these examples by cloning from your fork to your machine.  You can copy all the folders into your config\custom_components folder or just choose one.  Once you are a bit more familiar with the development process and the required tools, see advanced note below on how I do it to make my life easier.
+* `league_name` - The full league name: `[Short name] Current tournament` (e.g., `[LEC] Winter split`)
 
-## Starting to Code Your Own Integration
+* `league_logo` - The league logo
 
-These example integrations are basic foundations for an integration.  It is unlikely that you can just copy it, make a few tweaks and off you go.  However, it tries to demonstrate many of the HA concepts that most integrations would need.
+* `date` - The match start date
 
-If you are starting out using this example, I would recommend taking the following path.  In each step, add logging output to help you see what is going on - use simple text to show you have reached a point in a function, output api responses, variable values etc.
+* `last_update` - The last time the sensor was updated
 
-1. Establish the link to your api and configure the minimum set of parameters in your config flow to connect to it.
-2. Think about the data format you will have from your api and develop your DataUpdateCoordinator to capture and store that data in a way that makes it easier to use in your entities.
-3. Start adding your entities (and device definitions), one type at a time to ensure you are happy that they are being created/functioning correctly as you go.
-4. Now you can add more complexity with more config flow parameters, config flow options etc, automation triggers etc.
+* `clock` - Relative time since the match started (POST)
 
-## Breaking Down The Code
+* `kickoff_in` - Relative time until the match starts (first line on the left - PRE)
 
-Each example folder has a README file in which I have tried to explain each of the main elements.  I have also commented the code to provide explanaitions of what is happening and what you should change for your own integration.
+* `odds` - The number of matches that need to be won to win the game (first line on the right - PRE)
 
-## Advanced Notes
+* `venue` - The video game of the match (second line on the left - PRE)
 
-### Advanced How Do I Install This?
+* `overunder` - The full name of the match (second line on the right - PRE)
 
-In order to simplify my workflow when writing custom components, I have a directory on my machine that all developed custom components have a folder under.  This allows me to manage my git workflow via this folder seperate from the HA Dev Container as there are more files to include in an overall repository that what goes into custom_components (this README.md for example!).
+* `location` - The version of the video game (third line on the left - PRE)
 
-I then modify my devcontainer.json file (the one provided by HA to create you dev container) and mount this developed custom components directory to config/share within the dev container.
-From that I can create a symlink to place the correct folder in custom components.
+* `tv_network` - The match broadcast link (third line on the right - PRE)
 
-Sounds confusing??  Ok....So I have a folder structure:
+* `down_distance_text` - The full name of the match (line on the left - IN)
 
-```text
-  development
-    |_integrationAFolder
-        |_custom_components
-          |_integrationA
-    |_integrationBFolder
-        |_custom_components
-          |_integrationA
-    |-etc
+* `tv_network` - The match broadcast link (line on the right - IN)
+
+Side-dependent attributes (`team` and `opponent`):
+
+* `_name` - The team's name
+* `_logo` - The team's logo (light mode)
+* `_logo_dark` - The team's logo (dark mode)
+* `_score` - The current (IN) or final (POST) match score
+* `_timeouts` - The current match timeout score (IN)
+* `_win_probability` - Not implemented (IN)
+* `_colors` - The color to use for timeouts (IN)
+* `_homeaway` - Home or away
+* `_winner` - Match winner (POST)
+* `_record` - League record (X-Y)
+* `_rank` - Not implemented
+
+---
+
+## 🎨 Lovelace Card — Team Tracker Card
+
+The integration is designed to be compatible with the Lovelace [ha-teamtracker-card](https://github.com/vasqued2/ha-teamtracker-card).
+
+The following sensors can be used with the card:
+
+* `sensor.{videGame_slug}_{team_slug}`
+* `sensor.{videGame_slug}_{team_slug}_next_match`
+* `sensor.{videGame_slug}_{team_slug}_last_match`
+
+### Adding the Card
+
+In a dashboard, click **+ Add Card** → search for **Team Tracker Card**.
+
+The configuration can then be done:
+
+* through the Lovelace visual editor (requires external configuration)
+* or using YAML
+
+Or using YAML:
+
+```yaml
+type: custom:teamtracker-card
+entity: sensor.lol_karmine_corp_last_match
 ```
 
-The integrationXFolder level is the one that relates to your github repo.
-
-Then to be able to access this in my VSCode Dev Container, I add the following to the devcontainer.json file, just under the RunArgs line (currently around line 16).
-
-```text
-"mounts": [
-  "source=${localEnv:HOME}/development,target=${containerWorkspaceFolder}/share/development,type=bind",
-],
+```yaml
+type: custom:teamtracker-card
+entity: sensor.lol_karmine_corp
+home_side: left
+show_timeouts: true
+show_rank: true
+show_league: true
+outline: true
+debug: true
 ```
 
-You will then need to rebuild your dev container and this folder will now appear under config/share in your dev container.
+---
 
-To then symlink my custom integration into the config/custom_components folder, do the following in a terminal session inside the dev container.
+## 📸 Previews
 
-```text
-cd /workspaces/core/config/custom_components
-ln -s /workspaces/core/share/development/integrationAFolder/custom_components/integrationA integrationA
-```
+**First step:**
 
-And hey presto, when you run (or restart if already running) the Home Assistant server in your dev container, the integration will load and you will be able to add it via Devices & Services.
+<img width="500" alt="First configuration step" src="./assets/setup_step_1.png" />
+
+**Second step:**
+
+<img width="500" alt="Second configuration step" src="./assets/setup_step_2.png" />
+
+---
+
+## 🛠 Development
+
+Compatible with Home Assistant `2026.7+`.
+
+See the [development documentation](./docs/development.md) for local development.
+
+Structure:
+
+* `translations/*.json`: sensor translation files
+* `__init__.py`: integration and Lovelace card registration
+* `api.py`: API integration
+* `config_flow.py`: configuration UI wizard
+* `const.py`: constants
+* `coordinator.py`: smart data retrieval logic
+* `manifest.json`: metadata and dependencies
+* `models.py`: data models
+* `sensor.py`: sensor entities
+* `strings.json`: translated strings
+* `utils.py`: utility functions
+
+---
+
+## 👨‍💻 Author
+
+Developed by [pa-martin](https://github.com/pa-martin)
+
+Contributions are welcome via **Pull Requests** or **Issues**.
+
+---
+
+## 📄 License
+
+Open-source code licensed under the **MIT License**.

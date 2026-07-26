@@ -1,0 +1,104 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connecter Pandascore",
+        "description": "Saisissez votre token API et un nom d'equipe a rechercher.",
+        "data": {
+          "token": "Token API Pandascore",
+          "search": "Nom de l'equipe"
+        }
+      },
+      "select_teams": {
+        "title": "Selection des equipes",
+        "description": "Selectionnez les equipes a suivre.",
+        "data": {
+          "teams": "Equipes"
+        }
+      },
+      "reconfigure": {
+        "title": "Modifier l'integration",
+        "description": "Mettez a jour le token et relancez une recherche d'equipes.",
+        "data": {
+          "token": "Token API Pandascore",
+          "search": "Nom de l'equipe"
+        }
+      },
+      "select_teams_reconfigure": {
+        "title": "Selection des equipes",
+        "description": "Selectionnez les equipes a conserver pour cette integration.",
+        "data": {
+          "teams": "Equipes"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connexion impossible a l'API Pandascore.",
+      "no_teams_found": "Aucune equipe trouvee pour cette recherche.",
+      "no_team_selected": "Selectionnez au moins une equipe."
+    },
+    "abort": {
+      "already_configured": "Cette configuration existe deja."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Equipes",
+        "description": "Mettez a jour les equipes suivies. Pour en ajouter, utilisez 'Ajouter une equipe'.",
+        "data": {
+          "teams": "Equipes",
+          "add_team": "Ajouter une equipe"
+        }
+      },
+      "add_team": {
+        "title": "Ajouter une equipe",
+        "description": "Selectionnez les equipes a ajouter.",
+        "data": {
+          "new_teams": "Equipes"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connexion impossible a l'API Pandascore.",
+      "no_teams_found": "Aucune equipe trouvee pour cette recherche.",
+      "no_team_selected": "Selectionnez au moins une equipe."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "name": {
+        "name": "Nom"
+      },
+      "game": {
+        "name": "Jeu-vidéo",
+        "state": {
+          "LoL": "League of Legends",
+          "Valorant": "Valorant",
+          "Rocket League": "Rocket League"
+        }
+      },
+      "next_match": {
+        "name": "Prochain match"
+      },
+      "last_match": {
+        "name": "Dernier match"
+      },
+      "matches_won": {
+        "name": "Matchs gagnés"
+      },
+      "matches_loss": {
+        "name": "Matchs perdus"
+      },
+      "win_rate": {
+        "name": "Win rate"
+      },
+      "matches_played": {
+        "name": "Matchs joués"
+      },
+      "upcoming_matches": {
+        "name": "Matchs à venir"
+      }
+    }
+  }
+}

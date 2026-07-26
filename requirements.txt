@@ -1,0 +1,9 @@
+homeassistant
+
+Babel
+marshmallow
+marshmallow_dataclass
+voluptuous
+pre-commit
+
+ruff
