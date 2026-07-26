@@ -72,7 +72,7 @@
         "state": {
           "lol": "League of Legends",
           "valorant": "Valorant",
-          "rocket league": "Rocket League"
+          "rocket-league": "Rocket League"
         }
       },
       "next_match": {

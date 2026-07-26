@@ -1,6 +1,6 @@
 {
   "name": "Pandascore",
-  "country": ["FR", "US", "UK"],
+  "country": ["FR", "US"],
   "render_readme": true,
   "homeassistant": "2026.7.0",
   "hacs": "1.0.0",

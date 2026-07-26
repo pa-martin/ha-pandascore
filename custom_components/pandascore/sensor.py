@@ -116,7 +116,9 @@ class PandascoreGameSensor(PandascoreTeamSensorBase):
     @property
     def native_value(self) -> str:
         return (
-            str((self._team.get("current_videogame") or {}).get("name")).lower()
+            str((self._team.get("current_videogame") or {}).get("name"))
+            .lower()
+            .replace(" ", "-")
             or "Unknown"
         )
 
