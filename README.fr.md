@@ -161,7 +161,7 @@ debug: true
 ## 🛠 Développement
 
 Compatible avec Home Assistant `2026.7+`.
-Voir la [documentation](./docs/development.md) de développement local.
+Voir la [documentation](./DEV.md) de développement local.
 
 Structure :
 - `translations/*.json` : fichiers de traduction des capteurs
