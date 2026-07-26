@@ -1,197 +1,196 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from marshmallow_dataclass import class_schema
 
 
 @dataclass
 class League:
-    id: Optional[int]
-    image_url: Optional[str]
-    modified_at: Optional[str]
-    name: Optional[str]
-    slug: Optional[str]
-    url: Optional[str]
+    id: int | None
+    image_url: str | None
+    modified_at: str | None
+    name: str | None
+    slug: str | None
+    url: str | None
 
 
 @dataclass
 class Live:
-    opens_at: Optional[str]
-    supported: Optional[bool]
-    url: Optional[str]
+    opens_at: str | None
+    supported: bool | None
+    url: str | None
 
 
 @dataclass
 class Serie:
-    begin_at: Optional[datetime]
-    end_at: Optional[datetime]
-    full_name: Optional[str]
-    id: Optional[int]
-    league_id: Optional[int]
-    modified_at: Optional[datetime]
-    name: Optional[str]
-    season: Optional[str]
-    slug: Optional[str]
-    winner_id: Optional[int]
-    winner_type: Optional[str]
-    year: Optional[int]
+    begin_at: datetime | None
+    end_at: datetime | None
+    full_name: str | None
+    id: int | None
+    league_id: int | None
+    modified_at: datetime | None
+    name: str | None
+    season: str | None
+    slug: str | None
+    winner_id: int | None
+    winner_type: str | None
+    year: int | None
 
 
 @dataclass
 class Stream:
-    embed_url: Optional[str]
-    language: Optional[str]
-    main: Optional[bool]
-    official: Optional[bool]
-    raw_url: Optional[str]
+    embed_url: str | None
+    language: str | None
+    main: bool | None
+    official: bool | None
+    raw_url: str | None
 
 
 @dataclass
 class Tournament:
-    begin_at: Optional[datetime]
-    country: Optional[str]
-    detailed_stats: Optional[bool]
-    end_at: Optional[datetime]
-    has_bracket: Optional[bool]
-    id: Optional[int]
-    league_id: Optional[int]
-    live_supported: Optional[bool]
-    modified_at: Optional[datetime]
-    name: Optional[str]
-    prizepool: Optional[str]
-    region: Optional[str]
-    serie_id: Optional[int]
-    slug: Optional[str]
-    tier: Optional[str]
-    type: Optional[str]
-    winner_id: Optional[int]
-    winner_type: Optional[str]
+    begin_at: datetime | None
+    country: str | None
+    detailed_stats: bool | None
+    end_at: datetime | None
+    has_bracket: bool | None
+    id: int | None
+    league_id: int | None
+    live_supported: bool | None
+    modified_at: datetime | None
+    name: str | None
+    prizepool: str | None
+    region: str | None
+    serie_id: int | None
+    slug: str | None
+    tier: str | None
+    type: str | None
+    winner_id: int | None
+    winner_type: str | None
 
 
 @dataclass
 class Videogame:
-    id: Optional[int]
-    name: Optional[str]
-    slug: Optional[str]
+    id: int | None
+    name: str | None
+    slug: str | None
 
 
 @dataclass
 class VideogameTitle:
-    id: Optional[int]
-    name: Optional[str]
-    slug: Optional[str]
-    videogame_id: Optional[int]
+    id: int | None
+    name: str | None
+    slug: str | None
+    videogame_id: int | None
 
 
 @dataclass
 class VideogameVersion:
-    name: Optional[str]
-    current: Optional[bool]
+    name: str | None
+    current: bool | None
 
 
 @dataclass
 class Player:
-    id: Optional[int]
-    name: Optional[str]
-    first_name: Optional[str]
-    last_name: Optional[str]
-    slug: Optional[str]
+    id: int | None
+    name: str | None
+    first_name: str | None
+    last_name: str | None
+    slug: str | None
 
 
 @dataclass
 class Team:
-    acronym: Optional[str]
-    current_videogame: Optional[Videogame]
-    dark_mode_image_url: Optional[str]
-    id: Optional[int]
-    image_url: Optional[str]
-    location: Optional[str]
-    modified_at: Optional[datetime]
-    name: Optional[str]
-    players: Optional[list[Player]]
-    slug: Optional[str]
+    acronym: str | None
+    current_videogame: Videogame | None
+    dark_mode_image_url: str | None
+    id: int | None
+    image_url: str | None
+    location: str | None
+    modified_at: datetime | None
+    name: str | None
+    players: list[Player] | None
+    slug: str | None
 
 
 @dataclass
 class Opponent(Team):
-    type: Optional[str]
-    opponent: Optional[Team]
+    type: str | None
+    opponent: Team | None
 
 
 @dataclass
 class Game:
-    begin_at: Optional[datetime]
-    complete: Optional[bool]
-    detailed_stats: Optional[bool]
-    end_at: Optional[datetime]
-    finished: Optional[bool]
-    forfeit: Optional[bool]
-    id: Optional[int]
-    length: Optional[int]
-    match_id: Optional[int]
-    position: Optional[int]
-    status: Optional[str]
-    winner: Optional[Opponent]
-    winner_type: Optional[str]
+    begin_at: datetime | None
+    complete: bool | None
+    detailed_stats: bool | None
+    end_at: datetime | None
+    finished: bool | None
+    forfeit: bool | None
+    id: int | None
+    length: int | None
+    match_id: int | None
+    position: int | None
+    status: str | None
+    winner: Opponent | None
+    winner_type: str | None
 
 
 @dataclass
 class Result:
-    score: Optional[int]
-    team_id: Optional[int]
+    score: int | None
+    team_id: int | None
 
 
 @dataclass
 class Match:
-    begin_at: Optional[datetime]
-    detailed_stats: Optional[bool]
-    draw: Optional[bool]
-    end_at: Optional[datetime]
-    forfeit: Optional[bool]
-    game_advantage: Optional[str]
+    begin_at: datetime | None
+    detailed_stats: bool | None
+    draw: bool | None
+    end_at: datetime | None
+    forfeit: bool | None
+    game_advantage: str | None
 
-    games: Optional[list[Game]]
+    games: list[Game] | None
 
-    id: Optional[int]
+    id: int | None
 
-    league: Optional[League]
-    league_id: Optional[int]
+    league: League | None
+    league_id: int | None
 
-    live: Optional[Live]
+    live: Live | None
 
-    match_type: Optional[str]
-    modified_at: Optional[datetime]
-    name: Optional[str]
-    number_of_games: Optional[int]
+    match_type: str | None
+    modified_at: datetime | None
+    name: str | None
+    number_of_games: int | None
 
-    opponents: Optional[list[Opponent]]
+    opponents: list[Opponent] | None
 
-    original_scheduled_at: Optional[datetime]
-    rescheduled: Optional[bool]
+    original_scheduled_at: datetime | None
+    rescheduled: bool | None
 
-    results: Optional[list[Result]]
+    results: list[Result] | None
 
-    scheduled_at: Optional[datetime]
+    scheduled_at: datetime | None
 
-    serie: Optional[Serie]
-    serie_id: Optional[int]
+    serie: Serie | None
+    serie_id: int | None
 
-    slug: Optional[str]
-    status: Optional[str]
+    slug: str | None
+    status: str | None
 
     streams_list: list[Stream]
 
-    tournament: Optional[Tournament]
-    tournament_id: Optional[int]
+    tournament: Tournament | None
+    tournament_id: int | None
 
-    videogame: Optional[Videogame]
-    videogame_title: Optional[VideogameTitle]
-    videogame_version: Optional[VideogameVersion]
+    videogame: Videogame | None
+    videogame_title: VideogameTitle | None
+    videogame_version: VideogameVersion | None
 
-    winner: Optional[Opponent]
-    winner_id: Optional[int]
-    winner_type: Optional[str]
+    winner: Opponent | None
+    winner_id: int | None
+    winner_type: str | None
 
 
 MatchSchema = class_schema(Match)

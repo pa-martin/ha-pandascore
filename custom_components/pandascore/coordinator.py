@@ -1,18 +1,19 @@
 """DataUpdateCoordinator for Pandascore integration."""
+
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, timedelta
 from typing import Any
 
-import homeassistant.util.dt as dt_util
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util.dt import utcnow
 
 from . import utils
 from .api import PandascoreAPI
-from .const import DEFAULT_SCAN_INTERVAL, CONF_TOKEN, CONF_TEAMS
-from .models import Team, Match
+from .const import CONF_TEAMS, CONF_TOKEN, DEFAULT_SCAN_INTERVAL
+from .models import Match, Team
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,9 +32,10 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
-        self.token = str(entry.data.get(CONF_TOKEN) or '')
+        self.token = str(entry.data.get(CONF_TOKEN) or "")
         self.selected_teams = entry.options.get(
-            CONF_TEAMS, entry.data.get(CONF_TEAMS, []))
+            CONF_TEAMS, entry.data.get(CONF_TEAMS, [])
+        )
         self.api = PandascoreAPI(hass, self.token)
 
         super().__init__(
@@ -52,9 +54,9 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
                 return result
 
             # Year range
-            now = datetime.now(UTC)
-            start = datetime(now.year, 1, 1).date().isoformat()
-            end = datetime(now.year, 12, 31).date().isoformat()
+            dt_now = utcnow()
+            start = datetime(dt_now.year, 1, 1, tzinfo=dt_now.tzinfo).date().isoformat()
+            end = datetime(dt_now.year, 12, 31, tzinfo=dt_now.tzinfo).date().isoformat()
 
             for team in self.selected_teams:
                 team_id = int(team.get("id"))
@@ -62,17 +64,34 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
 
                 last_matches = [m for m in matches if m.status == "finished"]
                 last_matches.sort(
-                    key=lambda m: m.scheduled_at or m.begin_at or dt_util.utcnow(), reverse=True)
-                last_match = await self.build_match(last_matches[0], team_id) if last_matches else {}
+                    key=lambda m: m.scheduled_at or m.begin_at or utcnow(), reverse=True
+                )
+                last_match = (
+                    await self.build_match(last_matches[0], team_id)
+                    if last_matches
+                    else {}
+                )
 
-                next_matches = [m for m in matches if m.status in {
-                    "not_started", "pending", "running"}]
+                next_matches = [
+                    m
+                    for m in matches
+                    if m.status in {"not_started", "pending", "running"}
+                ]
                 next_matches.sort(
-                    key=lambda m: m.scheduled_at or m.begin_at or dt_util.utcnow())
-                next_match = await self.build_match(next_matches[0], team_id) if next_matches else {}
+                    key=lambda m: m.scheduled_at or m.begin_at or utcnow()
+                )
+                next_match = (
+                    await self.build_match(next_matches[0], team_id)
+                    if next_matches
+                    else {}
+                )
 
                 result[team_id] = TeamData(
-                    team=team, matches=matches, last_match=last_match, next_match=next_match)
+                    team=team,
+                    matches=matches,
+                    last_match=last_match,
+                    next_match=next_match,
+                )
 
             return result
         except Exception as err:  # pylint: disable=broad-except
@@ -82,8 +101,14 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
         """TODO"""
         match_opponent = utils.get_opponent(match, team_id)
 
-        match_mapped = await utils.build_team_tracker(self.hass, match, self.hass.config.language)
-        match_mapped['team_record'] = await self.api.async_get_record(team_id, match.serie.id)
-        match_mapped['opponent_record'] = await self.api.async_get_record(match_opponent.id, match.serie.id)
+        match_mapped = await utils.build_team_tracker(
+            self.hass, match, self.hass.config.language
+        )
+        match_mapped["team_record"] = await self.api.async_get_record(
+            team_id, match.serie.id
+        )
+        match_mapped["opponent_record"] = await self.api.async_get_record(
+            match_opponent.id, match.serie.id
+        )
 
         return match_mapped

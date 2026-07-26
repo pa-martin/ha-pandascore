@@ -1,4 +1,5 @@
 """Async client for the Pandascore API."""
+
 import logging
 from typing import Any
 
@@ -24,29 +25,30 @@ class PandascoreAPI:
         """Search teams by name."""
         url = f"{BASE_URL}/teams"
         params = {"search[name]": name}
-        headers = {"accept": HEADER_ACCEPT,
-                   "authorization": f"Bearer {self.token}"}
+        headers = {"accept": HEADER_ACCEPT, "authorization": f"Bearer {self.token}"}
         try:
             async with self._session.get(url, params=params, headers=headers) as resp:
                 if resp.status != 200:
                     _LOGGER.warning("Teams search failed: %s", resp.status)
                     return []
                 return await resp.json()
-        except ClientError as err:
-            _LOGGER.exception("Teams search connection error: %s", err)
+        except ClientError:
+            _LOGGER.exception("Teams search connection error")
             return []
 
-    async def async_get_matches(self, team_id: int, start: str, end: str) -> list[Match]:
+    async def async_get_matches(
+        self, team_id: int, start: str, end: str
+    ) -> list[Match]:
         """Get matches for a team between start and end (ISO date strings)."""
         url = f"{BASE_URL}/teams/{team_id}/matches"
         params = {"range[scheduled_at]": f"{start},{end}"}
-        headers = {"accept": HEADER_ACCEPT,
-                   "authorization": f"Bearer {self.token}"}
+        headers = {"accept": HEADER_ACCEPT, "authorization": f"Bearer {self.token}"}
         try:
             async with self._session.get(url, params=params, headers=headers) as resp:
                 if resp.status != 200:
                     _LOGGER.warning(
-                        "Matches fetch failed for id %s: %s", team_id, resp.status)
+                        "Matches fetch failed for id %s: %s", team_id, resp.status
+                    )
                     return []
                 data = await resp.json()
                 schema = MatchSchema(many=True)
@@ -54,25 +56,24 @@ class PandascoreAPI:
                 return x
         except ClientError as err:
             _LOGGER.warning(
-                "Matches fetch connection error for id %s: %s", team_id, err)
+                "Matches fetch connection error for id %s: %s", team_id, err
+            )
             return []
-        except Exception as err:
-            _LOGGER.exception(
-                "Matches mapping error for id %s: %s", team_id, err)
+        except Exception:
+            _LOGGER.exception("Matches mapping error for id %s", team_id)
             return []
 
     async def async_get_record(self, team_id: int, serie_id: str) -> str | None:
         """TODO"""
         url = f"{BASE_URL}/teams/{team_id}/matches"
-        params = {"filter[finished]": "true",
-                  "filter[serie_id]": str(serie_id)}
-        headers = {"accept": HEADER_ACCEPT,
-                   "authorization": f"Bearer {self.token}"}
+        params = {"filter[finished]": "true", "filter[serie_id]": str(serie_id)}
+        headers = {"accept": HEADER_ACCEPT, "authorization": f"Bearer {self.token}"}
         try:
             async with self._session.get(url, params=params, headers=headers) as resp:
                 if resp.status != 200:
                     _LOGGER.warning(
-                        "Matches fetch failed for id %s: %s", team_id, resp.status)
+                        "Matches fetch failed for id %s: %s", team_id, resp.status
+                    )
                     return None
                 data = await resp.json()
                 schema = MatchSchema(many=True)
@@ -82,9 +83,9 @@ class PandascoreAPI:
                 return f"{wins}-{losses}"
         except ClientError as err:
             _LOGGER.warning(
-                "Matches fetch connection error for id %s: %s", team_id, err)
+                "Matches fetch connection error for id %s: %s", team_id, err
+            )
             return None
-        except Exception as err:
-            _LOGGER.exception(
-                "Matches mapping error for id %s: %s", team_id, err)
+        except Exception:
+            _LOGGER.exception("Matches mapping error for id %s", team_id)
             return None
