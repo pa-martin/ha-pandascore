@@ -70,9 +70,9 @@
       "game": {
         "name": "Video game",
         "state": {
-          "LoL": "League of Legends",
-          "Valorant": "Valorant",
-          "Rocket League": "Rocket League"
+          "lol": "League of Legends",
+          "valorant": "Valorant",
+          "rocket league": "Rocket League"
         }
       },
       "next_match": {

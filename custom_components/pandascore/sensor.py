@@ -115,7 +115,10 @@ class PandascoreGameSensor(PandascoreTeamSensorBase):
 
     @property
     def native_value(self) -> str:
-        return (self._team.get("current_videogame") or {}).get("name") or "Unknown"
+        return (
+            str((self._team.get("current_videogame") or {}).get("name")).lower()
+            or "Unknown"
+        )
 
 
 class PandascoreNextMatchSensor(PandascoreTeamSensorBase):
