@@ -7,6 +7,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/pa-martin/ha-pandascore?label=Release&logo=github)](https://github.com/pa-martin/ha-pandascore/releases)
 [![Last Commit](https://img.shields.io/github/last-commit/pa-martin/ha-pandascore?label=Last%20Release&logo=github)](https://github.com/pa-martin/ha-pandascore/commits/main)
 [![GitHub Stars](https://img.shields.io/github/stars/pa-martin/ha-pandascore?style=social)](https://github.com/pa-martin/ha-pandascore/stargazers)
+
 Follow your favorite e-Sports teams' matches through the PandaScore API and the custom Team Tracker Card.
 
 ---
