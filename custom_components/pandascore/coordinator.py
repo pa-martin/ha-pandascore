@@ -102,7 +102,7 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
         match_opponent = utils.get_opponent(match, team_id)
 
         match_mapped = await utils.build_team_tracker(
-            self.hass, match, self.hass.config.language
+            self.hass, match, team_id, self.hass.config.language
         )
         match_mapped["team_record"] = await self.api.async_get_record(
             team_id, match.serie.id

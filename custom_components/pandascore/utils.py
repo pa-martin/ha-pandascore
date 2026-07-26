@@ -87,7 +87,7 @@ def extract_score(match: Match) -> str | None:
 
 
 async def build_team_tracker(
-    hass: HomeAssistant, match: Match, language: str | None
+    hass: HomeAssistant, match: Match, team_id: int, language: str | None
 ) -> dict[str, Any]:
     """TODO"""
     opponent_1 = (
@@ -100,16 +100,21 @@ async def build_team_tracker(
         if match.opponents[1].type == "Team"
         else match.opponents[1]
     )
+    if opponent_1.id == team_id:
+        team = opponent_1
+        opponent = opponent_2
+    else:
+        team = opponent_2
+        opponent = opponent_1
+
     op_win_rate = (
         0 if "karmine" in opponent_1.slug or "karmine" in opponent_2.slug else 0.5
     )
 
     entry_dict = await build_match_attributes(hass, match, language)
+    entry_dict.update(build_team_attributes(team, match.results, "team_", op_win_rate))
     entry_dict.update(
-        build_team_attributes(opponent_1, match.results, "team_", op_win_rate)
-    )
-    entry_dict.update(
-        build_team_attributes(opponent_2, match.results, "opponent_", op_win_rate)
+        build_team_attributes(opponent, match.results, "opponent_", op_win_rate)
     )
 
     return entry_dict
