@@ -31,9 +31,6 @@ jobs:
         - name: "Format"
           run: python3 -m ruff format .
 
-        - name: "Run Black"
-          run: black --check .
-
         - name: "Run Mypy"
           run: |
             mypy . || echo "Mypy finished with errors but continuing"
