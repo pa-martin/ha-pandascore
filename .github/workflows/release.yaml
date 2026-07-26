@@ -56,6 +56,12 @@ jobs:
           git push origin main
           git push origin "v${{ steps.version.outputs.version }}"
 
+      - name: "Create ZIP archive"
+        if: steps.version.outputs.release == 'true'
+        run: |
+          cd custom_components/pandascore
+          zip -r "${{ github.workspace }}/ha_pandascore.zip" ./
+
       - name: "Create GitHub Release"
         if: steps.version.outputs.release == 'true'
         env:
@@ -65,4 +71,5 @@ jobs:
             "v${{ steps.version.outputs.version }}" \
             --title "PandaScore v${{ steps.version.outputs.version }}" \
             --generate-notes \
-            --target main
+            --target main \
+            "${{ github.workspace }}/ha_pandascore.zip"
