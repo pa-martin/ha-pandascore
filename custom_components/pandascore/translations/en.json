@@ -70,9 +70,21 @@
       "game": {
         "name": "Video game",
         "state": {
-          "lol": "League of Legends",
+          "league-of-legends": "League of Legends",
           "valorant": "Valorant",
-          "rocket-league": "Rocket League"
+          "rl": "Rocket League",
+          "mlbb": "Mobile Legends: Bang Bang",
+          "starcraft-brood-war": "StarCraft: Brood War",
+          "starcraft-2": "StarCraft 2",
+          "lol-wild-rift": "League of Legends: Wild Rift",
+          "kog": "King of Glory",
+          "fifa": "EA Sports FC",
+          "r6-siege": "Rainbow Six Siege",
+          "cod-mw": "Call of Duty",
+          "pubg": "PUBG",
+          "ow": "Overwatch",
+          "dota-2": "Dota 2",
+          "cs-go": "Counter-Strike"
         }
       },
       "next_match": {

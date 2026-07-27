@@ -71,12 +71,7 @@
         "name": "Nom"
       },
       "game": {
-        "name": "Jeu-vidéo",
-        "state": {
-          "lol": "League of Legends",
-          "valorant": "Valorant",
-          "rocket-league": "Rocket League"
-        }
+        "name": "Jeu-vidéo"
       },
       "next_match": {
         "name": "Prochain match"
