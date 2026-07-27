@@ -11,7 +11,7 @@ permissions:
 jobs:
   release:
     name: "Release"
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    if: startsWith(github.event.head_commit.message, 'chore(release):')
     runs-on: "ubuntu-latest"
 
     steps:
@@ -20,50 +20,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Set up Python"
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
-
-      - name: "Determine next version"
+      - name: "Read version"
         id: version
-        run: python3 scripts/release.py
-
-      - name: "Stop if no release is required"
-        if: steps.version.outputs.release != 'true'
-        run: echo "No release required."
-
-      - name: "Configure Git"
-        if: steps.version.outputs.release == 'true'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          VERSION=$(python3 -c "
+          import json
 
-      - name: "Commit version change"
-        if: steps.version.outputs.release == 'true'
-        run: |
-          git add custom_components/pandascore/manifest.json
-          git commit -m "chore(release): v${{ steps.version.outputs.version }} [skip ci]"
+          with open(
+              'custom_components/pandascore/manifest.json',
+              encoding='utf-8',
+          ) as file:
+              print(json.load(file)['version'])
+          ")
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
       - name: "Create Git tag"
-        if: steps.version.outputs.release == 'true'
         run: |
           git tag "v${{ steps.version.outputs.version }}"
-
-      - name: "Push release commit and tag"
-        if: steps.version.outputs.release == 'true'
-        run: |
-          git push origin main
           git push origin "v${{ steps.version.outputs.version }}"
 
       - name: "Create ZIP archive"
-        if: steps.version.outputs.release == 'true'
         run: |
           cd custom_components/pandascore
-          zip -r "${{ github.workspace }}/ha_pandascore.zip" ./
+
+          zip -r \
+            "${{ github.workspace }}/ha_pandascore.zip" \
+            ./
 
       - name: "Create GitHub Release"
-        if: steps.version.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

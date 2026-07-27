@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -21,7 +22,11 @@ def run(*args: str) -> str:
 
 def get_current_version() -> str:
     """Read the current integration version."""
-    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    manifest = json.loads(
+        MANIFEST_PATH.read_text(
+            encoding="utf-8",
+        )
+    )
 
     version = manifest.get("version")
 
@@ -68,21 +73,33 @@ def get_commits_since(tag: str | None) -> list[str]:
 def determine_bump(commits: list[str]) -> str | None:
     """Determine the required version bump."""
     for commit in commits:
-        if "BREAKING CHANGE" in commit or re.match(r"^[a-z]+(\([^)]*\))?!:", commit):
+        if "BREAKING CHANGE" in commit or re.match(
+            r"^[a-z]+(\([^)]*\))?!:",
+            commit,
+        ):
             return "major"
 
     for commit in commits:
-        if re.match(r"^feat(\([^)]*\))?:", commit):
+        if re.match(
+            r"^feat(\([^)]*\))?:",
+            commit,
+        ):
             return "minor"
 
     for commit in commits:
-        if re.match(r"^fix(\([^)]*\))?:", commit):
+        if re.match(
+            r"^fix(\([^)]*\))?:",
+            commit,
+        ):
             return "patch"
 
     return None
 
 
-def bump_version(version: str, bump: str) -> str:
+def bump_version(
+    version: str,
+    bump: str,
+) -> str:
     """Increment a semantic version."""
     match = re.fullmatch(
         r"(\d+)\.(\d+)\.(\d+)",
@@ -92,7 +109,10 @@ def bump_version(version: str, bump: str) -> str:
     if not match:
         raise ValueError(f"Invalid semantic version: {version}")
 
-    major, minor, patch = map(int, match.groups())
+    major, minor, patch = map(
+        int,
+        match.groups(),
+    )
 
     if bump == "major":
         major += 1
@@ -114,7 +134,11 @@ def bump_version(version: str, bump: str) -> str:
 
 def update_manifest(version: str) -> None:
     """Update manifest.json version."""
-    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    manifest = json.loads(
+        MANIFEST_PATH.read_text(
+            encoding="utf-8",
+        )
+    )
 
     manifest["version"] = version
 
@@ -129,8 +153,25 @@ def update_manifest(version: str) -> None:
     )
 
 
+def set_github_output(
+    name: str,
+    value: str,
+) -> None:
+    """Set a GitHub Actions output."""
+    github_output = os.environ.get("GITHUB_OUTPUT")
+
+    if not github_output:
+        return
+
+    with Path(github_output).open(
+        "a",
+        encoding="utf-8",
+    ) as output:
+        output.write(f"{name}={value}\n")
+
+
 def main() -> None:
-    """Create a new release."""
+    """Prepare a new release."""
     current_version = get_current_version()
     latest_tag = get_latest_tag()
 
@@ -138,12 +179,20 @@ def main() -> None:
 
     if not commits:
         print("No commits since the last release.")
+        set_github_output(
+            "release",
+            "false",
+        )
         return
 
     bump = determine_bump(commits)
 
     if bump is None:
         print("No release required. No feat, fix or breaking change found.")
+        set_github_output(
+            "release",
+            "false",
+        )
         return
 
     next_version = bump_version(
@@ -160,22 +209,18 @@ def main() -> None:
 
     print(f"Updated {MANIFEST_PATH} to version {next_version}")
 
-    # Export values for GitHub Actions.
-    github_output = Path(
-        __import__("os").environ.get(
-            "GITHUB_OUTPUT",
-            "/dev/null",
-        )
+    set_github_output(
+        "version",
+        next_version,
     )
-
-    if github_output != Path("/dev/null"):
-        with github_output.open(
-            "a",
-            encoding="utf-8",
-        ) as output:
-            output.write(f"version={next_version}\n")
-            output.write(f"bump={bump}\n")
-            output.write("release=true\n")
+    set_github_output(
+        "bump",
+        bump,
+    )
+    set_github_output(
+        "release",
+        "true",
+    )
 
 
 if __name__ == "__main__":
