@@ -164,14 +164,19 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
         match_mapped = await utils.async_build_team_tracker(
             self.hass, match, team_id, self.hass.config.language
         )
+
+        serie_id = match.serie_id or (match.serie.id if match.serie else None)
+        opponent_id = match_opponent.id if match_opponent else None
+        if not serie_id or opponent_id is None:
+            match_mapped["team_record"] = None
+            match_mapped["opponent_record"] = None
+            return match_mapped
+
         team_record, opponent_record = await asyncio.gather(
-            self.api.async_get_record(team_id, str(match.serie.id or "")),
-            self.api.async_get_record(
-                match_opponent.id or -1, str(match.serie.id or "")
-            ),
+            self.api.async_get_record(team_id, str(serie_id)),
+            self.api.async_get_record(int(opponent_id), str(serie_id)),
         )
 
         match_mapped["team_record"] = team_record
         match_mapped["opponent_record"] = opponent_record
-
         return match_mapped
