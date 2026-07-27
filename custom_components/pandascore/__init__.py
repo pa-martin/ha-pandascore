@@ -1,7 +1,7 @@
 """Pandascore integration entrypoint."""
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntry
 
 from .const import DOMAIN, PLATFORMS
@@ -61,7 +61,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-@callback
 async def async_remove_config_entry_device(
     _: HomeAssistant, config_entry: ConfigEntry, device_entry: DeviceEntry
 ) -> bool:

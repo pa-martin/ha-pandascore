@@ -118,7 +118,7 @@ def extract_score(match: Match) -> str | None:
     return None
 
 
-async def build_team_tracker(
+async def async_build_team_tracker(
     hass: HomeAssistant, match: Match, team_id: int, language: str | None
 ) -> dict[str, Any]:
     """
@@ -159,7 +159,7 @@ async def build_team_tracker(
         0 if "karmine" in opponent_1.slug or "karmine" in opponent_2.slug else 0.5
     )
 
-    entry_dict = await build_match_attributes(hass, match, language)
+    entry_dict = await async_build_match_attributes(hass, match, language)
     entry_dict.update(build_team_attributes(team, match.results, "team_", op_win_rate))
     entry_dict.update(
         build_team_attributes(opponent, match.results, "opponent_", op_win_rate)
@@ -168,7 +168,7 @@ async def build_team_tracker(
     return entry_dict
 
 
-async def build_match_attributes(
+async def async_build_match_attributes(
     hass: HomeAssistant, match: Match, language: str | None
 ) -> dict[str, Any]:
     """
@@ -194,14 +194,14 @@ async def build_match_attributes(
     local_stream = local_streams[0] if len(local_streams) > 0 else None
 
     state = "PRE"
-    relative = await get_relative_date(
+    relative = await async_get_relative_date(
         hass, (match.begin_at or match.scheduled_at) or now(), language or "en"
     )
     if match.status == "running":
         state = "IN"
     if match.status in {"finished", "canceled"}:
         state = "POST"
-        relative = await get_relative_date(
+        relative = await async_get_relative_date(
             hass, match.end_at or now(), language or "en"
         )
 
@@ -339,7 +339,9 @@ def get_opponent(match: Match, team_id: int) -> Opponent:
     return opponent_2 if opponent_1.id == team_id else opponent_1
 
 
-async def get_relative_date(hass: HomeAssistant, date: datetime, language: str) -> str:
+async def async_get_relative_date(
+    hass: HomeAssistant, date: datetime, language: str
+) -> str:
     """
     Format a date as a localized relative time string.
 
