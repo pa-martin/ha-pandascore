@@ -1,5 +1,6 @@
 """DataUpdateCoordinator for Pandascore integration."""
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -20,6 +21,18 @@ _LOGGER = logging.getLogger(__name__)
 
 @dataclass
 class TeamData:
+    """
+    Store all data associated with a configured PandaScore team.
+
+
+    :ivar team: The PandaScore team information.
+    :ivar matches: The list of matches retrieved for the team.
+    :ivar last_match: The mapped data of the team's most recently finished
+        match, or an empty dictionary if no finished match is available.
+    :ivar next_match: The mapped data of the team's next upcoming or currently
+        active match, or an empty dictionary if no such match is available.
+    """
+
     team: Team
     matches: list[Match]
     last_match: dict[str, Any]
@@ -27,9 +40,31 @@ class TeamData:
 
 
 class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]):
-    """Coordinator to fetch teams and matches."""
+    """
+    Coordinate data updates for the PandaScore integration.
+
+
+    The coordinator periodically retrieves match data for all teams selected
+    in the PandaScore configuration entry. It identifies the most recent
+    finished match and the next upcoming or currently active match for each
+    team, then exposes the resulting data to Home Assistant platforms.
+
+    :param hass: The Home Assistant instance.
+    :param entry: The PandaScore configuration entry containing the API token
+        and the list of selected teams.
+    """
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
+        """
+        Initialize the PandaScore data update coordinator.
+
+        The coordinator creates a PandaScore API client and configures the
+        update interval using the default PandaScore scan interval.
+
+        :param hass: The Home Assistant instance.
+        :param entry: The PandaScore configuration entry containing the API
+            token and selected teams.
+        """
         self.hass = hass
         self.entry = entry
         self.token = str(entry.data.get(CONF_TOKEN) or "")
@@ -47,7 +82,19 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
         )
 
     async def _async_update_data(self) -> dict[int, TeamData]:
-        """Fetch and return data for configured teams."""
+        """
+        Fetch and process data for all configured teams.
+
+        Matches are retrieved for the current calendar year. For each
+        configured team, the most recent finished match and the next upcoming
+        or currently active match are identified and mapped to tracker data.
+
+        :return: A dictionary mapping each PandaScore team identifier to its
+            corresponding :class:`TeamData` instance. An empty dictionary is
+            returned when no teams are configured.
+        :raises UpdateFailed: If an unexpected error occurs while fetching
+            or processing the team and match data.
+        """
         try:
             result: dict[int, TeamData] = {}
             if not self.selected_teams:
@@ -67,7 +114,7 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
                     key=lambda m: m.scheduled_at or m.begin_at or utcnow(), reverse=True
                 )
                 last_match = (
-                    await self.build_match(last_matches[0], team_id)
+                    await self._async_build_match(last_matches[0], team_id)
                     if last_matches
                     else {}
                 )
@@ -81,7 +128,7 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
                     key=lambda m: m.scheduled_at or m.begin_at or utcnow()
                 )
                 next_match = (
-                    await self.build_match(next_matches[0], team_id)
+                    await self._async_build_match(next_matches[0], team_id)
                     if next_matches
                     else {}
                 )
@@ -97,18 +144,39 @@ class PandascoreDataUpdateCoordinator(DataUpdateCoordinator[dict[int, TeamData]]
         except Exception as err:  # pylint: disable=broad-except
             raise UpdateFailed(err) from err
 
-    async def build_match(self, match: Match, team_id: int):
-        """TODO"""
+    async def _async_build_match(self, match: Match, team_id: int) -> dict[str, Any]:
+        """
+        Build a mapped representation of a match for a specific team.
+
+        The match is converted into the attribute structure used by the
+        integration's match tracker. The team's and opponent's series
+        records are then retrieved and added to the mapped match data.
+
+        :param match: The PandaScore match to map.
+        :param team_id: The identifier of the team for which the match
+            is being mapped.
+        :return: A dictionary containing the mapped match tracker attributes,
+            including the selected team's record and the opponent's record
+            for the match series.
+        """
         match_opponent = utils.get_opponent(match, team_id)
 
-        match_mapped = await utils.build_team_tracker(
+        match_mapped = await utils.async_build_team_tracker(
             self.hass, match, team_id, self.hass.config.language
         )
-        match_mapped["team_record"] = await self.api.async_get_record(
-            team_id, match.serie.id
-        )
-        match_mapped["opponent_record"] = await self.api.async_get_record(
-            match_opponent.id, match.serie.id
+
+        serie_id = match.serie_id or (match.serie.id if match.serie else None)
+        opponent_id = match_opponent.id if match_opponent else None
+        if not serie_id or opponent_id is None:
+            match_mapped["team_record"] = None
+            match_mapped["opponent_record"] = None
+            return match_mapped
+
+        team_record, opponent_record = await asyncio.gather(
+            self.api.async_get_record(team_id, str(serie_id)),
+            self.api.async_get_record(int(opponent_id), str(serie_id)),
         )
 
+        match_mapped["team_record"] = team_record
+        match_mapped["opponent_record"] = opponent_record
         return match_mapped

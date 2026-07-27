@@ -1,4 +1,4 @@
-"""Utility functions for Pandascore integration."""
+"""Utility helpers for Pandascore match formatting and translations."""
 
 from datetime import datetime, timedelta
 from functools import partial
@@ -19,7 +19,12 @@ LOCALE_MAP = {
 
 
 def estimate_duration_ms(videogame_id: int, number_of_games: int) -> int:
-    """TODO"""
+    """
+    Estimate the duration of a match in milliseconds based on the videogame and number of games.
+    :param videogame_id: the id of the game
+    :param number_of_games: the maximal numbers of games (eg: 5 in case of bo5)
+    :return: a duration in milliseconds
+    """
     # durations in milliseconds per single game
     mapping = {
         1: 60 * 60 * 1000,
@@ -35,7 +40,23 @@ def estimate_duration_ms(videogame_id: int, number_of_games: int) -> int:
 def build_match_entry(
     team_id: int, match: Match, include_result: bool = False
 ) -> dict[str, Any]:
-    """TODO"""
+    """
+    Build a dictionary representing a match entry for a team.
+
+    If the match does not have an explicit end time but has a scheduled or
+    start time, the end time is estimated from the videogame and the maximum
+    number of games.
+
+    :param team_id: The identifier of the team for which the match entry
+        is being built.
+    :param match: The match to format.
+    :param include_result: Whether to include the match result and score
+        in the returned dictionary.
+    :return: A dictionary containing the match start and end times,
+        the opponent, tournament name, and maximum number of games.
+        If ``include_result`` is ``True``, the dictionary also contains
+        the match result and score.
+    """
     scheduled = match.scheduled_at or match.begin_at
     end_at = match.end_at
     if scheduled and not end_at:
@@ -74,7 +95,18 @@ def build_match_entry(
 
 
 def extract_score(match: Match) -> str | None:
-    """TODO"""
+    """
+    Extract the final series score from a match.
+
+
+    The score is formatted as ``"home-away"`` using the scores of the first
+    two match results. If fewer than two results are available or the score
+    cannot be derived, ``None`` is returned.
+
+    :param match: The match from which to extract the series score.
+    :return: The formatted series score as ``"home-away"``, or ``None``
+        if the score cannot be determined.
+    """
     results = match.results or []
     if results:
         try:
@@ -86,10 +118,26 @@ def extract_score(match: Match) -> str | None:
     return None
 
 
-async def build_team_tracker(
+async def async_build_team_tracker(
     hass: HomeAssistant, match: Match, team_id: int, language: str | None
 ) -> dict[str, Any]:
-    """TODO"""
+    """
+    Build the complete attribute payload for a team's match tracker card.
+
+
+    The returned dictionary combines common match attributes with
+    team-specific and opponent-specific attributes.
+
+    :param hass: The Home Assistant instance used for asynchronous operations
+        such as localized date formatting.
+    :param match: The match for which the tracker attributes are generated.
+    :param team_id: The identifier of the team whose tracker attributes
+        are being generated.
+    :param language: The language code used for localized strings and stream
+        selection. If ``None``, the default language is used.
+    :return: A dictionary containing common match attributes, team attributes,
+        and opponent attributes for the match tracker card.
+    """
     opponent_1 = (
         match.opponents[0].opponent
         if match.opponents[0].type == "Team"
@@ -111,7 +159,7 @@ async def build_team_tracker(
         0 if "karmine" in opponent_1.slug or "karmine" in opponent_2.slug else 0.5
     )
 
-    entry_dict = await build_match_attributes(hass, match, language)
+    entry_dict = await async_build_match_attributes(hass, match, language)
     entry_dict.update(build_team_attributes(team, match.results, "team_", op_win_rate))
     entry_dict.update(
         build_team_attributes(opponent, match.results, "opponent_", op_win_rate)
@@ -120,30 +168,46 @@ async def build_team_tracker(
     return entry_dict
 
 
-async def build_match_attributes(
+async def async_build_match_attributes(
     hass: HomeAssistant, match: Match, language: str | None
 ) -> dict[str, Any]:
-    """TODO"""
+    """
+    Build the common match attributes shared by both sides of a tracker.
+
+
+    The function determines the current match state, selects the stream
+    corresponding to the requested language, and builds localized relative
+    date information.
+
+    :param hass: The Home Assistant instance used for asynchronous date
+        formatting.
+    :param match: The match for which attributes are generated.
+    :param language: The language code used to select the local stream
+        and translate UI strings. If ``None``, the default language is used.
+    :return: A dictionary containing common match attributes, including
+        the match state, sport, league, league logo, date, last update,
+        venue, odds, location, TV network, and relative kickoff time.
+    """
     local_streams = [
         stream for stream in match.streams_list if stream.language == language
     ]
     local_stream = local_streams[0] if len(local_streams) > 0 else None
 
     state = "PRE"
-    relative = await get_relative_date(
+    relative = await async_get_relative_date(
         hass, (match.begin_at or match.scheduled_at) or now(), language or "en"
     )
     if match.status == "running":
         state = "IN"
     if match.status in {"finished", "canceled"}:
         state = "POST"
-        relative = await get_relative_date(
+        relative = await async_get_relative_date(
             hass, match.end_at or now(), language or "en"
         )
 
     return {
         "state": state,
-        "sport": match.league.name if match.league else "Unknown",
+        "sport": match.league.name if match.league else None,
         "league_name": get_full_game_name(match),
         "league_logo": match.league.image_url if match.league else None,
         "date": match.begin_at or match.scheduled_at,
@@ -169,11 +233,28 @@ def build_team_attributes(
     opponent: Opponent,
     results: list[Result],
     side: Literal["team_", "opponent_"],
-    op_win_rate: int,
+    op_win_rate: float,
 ) -> dict[str, Any]:
-    """TODO"""
+    """
+    Build side-specific attributes for a team or its opponent.
+
+
+    The returned attributes use the provided prefix to distinguish between
+    the tracked team and its opponent.
+
+    :param opponent: The team or opponent for which attributes are generated.
+    :param results: The list of match results used to determine the score,
+        home/away status, and winner.
+    :param side: The attribute prefix to use. Must be either ``"team_"``
+        or ``"opponent_"``.
+    :param op_win_rate: The default win probability assigned to the opponent
+        unless the team is identified as Karmine Corp.
+    :return: A dictionary containing side-specific attributes such as
+        name, logos, score, timeouts, win probability, colors, home/away
+        status, winner status, record, and rank.
+    """
     return {
-        side + "name": opponent.name or "Unknown",
+        side + "name": opponent.name or None,
         side + "logo": opponent.image_url or "",
         side + "logo_dark": opponent.dark_mode_image_url or "",
         side + "score": results[0].score
@@ -195,7 +276,17 @@ def build_team_attributes(
 
 
 def get_full_game_name(match: Match) -> str:
-    """TODO"""
+    """
+    Return the full display name of a match.
+
+
+    The display name is constructed from the league name, series full name,
+    and tournament name when these values are available.
+
+    :param match: The match from which to build the display name.
+    :return: A formatted string containing the available league, series,
+        and tournament names.
+    """
     league_name = match.league.name if match.league else None
     serie_name = match.serie.full_name if match.serie else None
     tournament_name = match.tournament.name if match.tournament else None
@@ -213,12 +304,28 @@ def get_full_game_name(match: Match) -> str:
 
 
 def get_bo(number_of_games: int) -> int:
-    """TODO"""
+    """
+    Return the best-of length for a match series.
+
+
+    :param number_of_games: The maximum number of games that can be played
+        in the series.
+    :return: The best-of length corresponding to the provided number of games,
+        for example ``3`` for a best-of-three (BO3) series.
+    """
     return int((number_of_games - 1) / 2 + 1)
 
 
-def get_opponent(match: Match, team_id: int) -> Any:
-    """Get the opponent of a team in a match."""
+def get_opponent(match: Match, team_id: int) -> Opponent:
+    """
+    Get the opponent of a team in a match.
+
+
+    :param match: The match containing the team and its opponent.
+    :param team_id: The identifier of the team for which the opponent
+        should be returned.
+    :return: The opponent of the specified team.
+    """
     opponent_1 = (
         match.opponents[0].opponent
         if match.opponents[0].type == "Team"
@@ -232,8 +339,26 @@ def get_opponent(match: Match, team_id: int) -> Any:
     return opponent_2 if opponent_1.id == team_id else opponent_1
 
 
-async def get_relative_date(hass: HomeAssistant, date: datetime, language: str) -> str:
-    """TODO"""
+async def async_get_relative_date(
+    hass: HomeAssistant, date: datetime, language: str
+) -> str:
+    """
+    Format a date as a localized relative time string.
+
+
+    The relative duration between the provided date and the current time
+    is calculated and formatted using Babel. The formatting operation
+    is executed in the Home Assistant executor to avoid blocking
+    the event loop.
+
+    :param hass: The Home Assistant instance used to execute the formatting
+        operation outside the event loop.
+    :param date: The date and time to format.
+    :param language: The language code used to select the locale.
+        Supported language codes are ``fr``, ``en``, ``de``, and ``es``.
+    :return: A localized relative time string, such as ``"in 2 days"``
+        or ``"il y a 5 minutes"``.
+    """
     f_kwargs = {
         "delta": date - now(),
         "add_direction": True,
@@ -243,7 +368,20 @@ async def get_relative_date(hass: HomeAssistant, date: datetime, language: str) 
 
 
 def translate(language: str | None, string: str) -> str:
-    """TODO"""
+    """
+    Translate a UI string into the requested language.
+
+
+    If the requested language or translation key is not available, the
+    original string is returned as a fallback.
+
+    :param language: The language code used to select the translation.
+        Supported language codes are ``fr``, ``en``, ``de``, and ``es``.
+        If ``None``, English is used as the default language.
+    :param string: The translation key to translate.
+    :return: The translated string, or the original string if no translation
+        is available.
+    """
     translations = {
         "en": {
             "down_distance_text": "Best of %s",

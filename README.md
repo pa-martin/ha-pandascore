@@ -11,6 +11,9 @@
 
 Follow your favorite e-Sports teams' matches through the PandaScore API and the custom Team Tracker Card.
 
+This documentation is also available in
+- [French - Français](./README.fr.md)
+
 ---
 
 ## 📦 Installation
@@ -36,14 +39,12 @@ Follow your favorite e-Sports teams' matches through the PandaScore API and the 
 1. Go to **Settings → Devices & services → Add Integration**
 2. Search for **PandaScore API**
 3. Search for teams:
-
-    * PandaScore API key
-    * Keywords used to search for multiple teams (e.g., karmine, gentle mates)
+   * PandaScore API key
+   * Keywords used to search for multiple teams (e.g., karmine, gentle mates)
 4. Team selection:
-
-    * A list of teams returned by the API is displayed
-    * Select the teams you are interested in
-    * Teams are displayed using the format `[Video game] Team name`
+   * A list of teams returned by the API is displayed
+   * Select the teams you are interested in
+   * Teams are displayed using the format `[Video game] Team name`
 
 Multiple searches can be configured separately.
 
@@ -187,7 +188,7 @@ debug: true
 
 Compatible with Home Assistant `2026.7+`.
 
-See the [development documentation](./docs/development.md) for local development.
+See the [development documentation](./DEV.md) for local development.
 
 Structure:
 
