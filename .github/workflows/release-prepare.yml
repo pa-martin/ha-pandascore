@@ -12,7 +12,7 @@ permissions:
 jobs:
   prepare:
     name: "Prepare release"
-    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(') }}
     runs-on: "ubuntu-latest"
 
     steps:
